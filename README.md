@@ -115,13 +115,13 @@ The playbook automates:
 
 ### 4. Access the Application
 
-After successful deployment, the application can be accessed locally through a web browser:
+The application currently runs locally on an Ubuntu virtual machine managed by Vagrant and VirtualBox.
 
-[http://127.0.0.1:5000](http://127.0.0.1:5000)
+After successful deployment, it can be accessed from the host machine through:
 
-This address is available only on the host machine where the virtual machine is running and port forwarding is configured.
+http://127.0.0.1:5000
 
-The application is not publicly hosted or accessible over the internet.
+Cloud deployment and public access through a domain name are planned as future improvements.
 
 ## Database and Data Persistence
 
@@ -154,6 +154,19 @@ This project demonstrates practical experience with:
 - Gunicorn and systemd services.
 - SQLite database initialization and persistence.
 - Idempotent infrastructure automation.
+
+## Future Improvements
+
+The project can be extended with the following features:
+
+- User authentication with registration, login, and logout.
+- Personal dashboards where users can manage their own job applications.
+- Database enhancements to support multiple users and their application data.
+- Cloud deployment using Hetzner Cloud.
+- Domain name and DNS configuration.
+- HTTPS support for secure access.
+
+These improvements are planned for future development and are not part of the current implementation.
 
 ## Notes
 
