@@ -115,9 +115,13 @@ The playbook automates:
 
 ### 4. Access the Application
 
-If port 5000 is forwarded from the VM to the host, open:
+After successful deployment, the application can be accessed locally through a web browser:
 
 [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+This address is available only on the host machine where the virtual machine is running and port forwarding is configured.
+
+The application is not publicly hosted or accessible over the internet.
 
 ## Database and Data Persistence
 
