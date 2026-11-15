@@ -1,0 +1,29 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Local databases and personal data
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and private keys
+.env
+.env.*
+*.pem
+*.key
+*private_key*
+
+# Local Ansible inventory
+ansible/inventory/hosts.ini
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store

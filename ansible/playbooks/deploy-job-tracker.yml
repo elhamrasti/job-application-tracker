@@ -1,0 +1,113 @@
+---
+- name: Deploy Job Application Tracker
+  hosts: webservers
+  become: true
+
+  vars:
+    app_dir: /opt/job-application-tracker
+    app_user: vagrant
+    app_source_dir: "{{ playbook_dir }}/../../app"
+
+  tasks:
+    - name: Install Python packages
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-venv
+          - python3-pip
+        state: present
+        update_cache: true
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0755"
+
+    - name: Copy application files
+      ansible.builtin.copy:
+        src: "{{ app_source_dir }}/{{ item }}"
+        dest: "{{ app_dir }}/{{ item }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0644"
+      loop:
+        - app.py
+        - init_db.py
+        - requirements.txt
+      notify: Restart Job Tracker
+
+    - name: Copy templates directory
+      ansible.builtin.copy:
+        src: "{{ app_source_dir }}/templates/"
+        dest: "{{ app_dir }}/templates/"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        directory_mode: "0755"
+      notify: Restart Job Tracker
+
+    - name: Copy static directory
+      ansible.builtin.copy:
+        src: "{{ app_source_dir }}/static/"
+        dest: "{{ app_dir }}/static/"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        directory_mode: "0755"
+      notify: Restart Job Tracker
+
+    - name: Create Python virtual environment
+      ansible.builtin.command:
+        cmd: "python3 -m venv {{ app_dir }}/venv"
+        creates: "{{ app_dir }}/venv/bin/python"
+      become_user: "{{ app_user }}"
+
+    - name: Install application dependencies
+      ansible.builtin.pip:
+        requirements: "{{ app_dir }}/requirements.txt"
+        virtualenv: "{{ app_dir }}/venv"
+      become_user: "{{ app_user }}"
+
+    - name: Initialize database only if it does not exist
+      ansible.builtin.command:
+        cmd: python3 init_db.py
+        chdir: "{{ app_dir }}"
+        creates: "{{ app_dir }}/applications.db"
+      become_user: "{{ app_user }}"
+
+    - name: Create Gunicorn systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/job-tracker.service
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Job Application Tracker
+          After=network.target
+
+          [Service]
+          User={{ app_user }}
+          Group={{ app_user }}
+          WorkingDirectory={{ app_dir }}
+          ExecStart={{ app_dir }}/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:5000 app:app
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Restart Job Tracker
+
+    - name: Enable and start Job Tracker
+      ansible.builtin.systemd:
+        name: job-tracker
+        enabled: true
+        state: started
+        daemon_reload: true
+
+  handlers:
+    - name: Restart Job Tracker
+      ansible.builtin.systemd:
+        name: job-tracker
+        state: restarted
+        daemon_reload: true

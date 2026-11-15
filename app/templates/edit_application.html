@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Job Application</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Edit Job Application</h1>
+
+        <p class="subtitle">
+            Update the information about your job application.
+        </p>
+
+        <div class="table-container">
+
+            <form action="{{ url_for('edit_application', application_id=application.id) }}"
+                  method="POST">
+
+                <label for="company">Company Name:</label>
+
+                <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    value="{{ application.company }}"
+                    required
+                >
+
+                <br><br>
+
+                <label for="job_title">Job Title:</label>
+
+                <input
+                    type="text"
+                    id="job_title"
+                    name="job_title"
+                    value="{{ application.job_title }}"
+                    required
+                >
+
+                <br><br>
+
+                <label for="application_date">Application Date:</label>
+
+                <input
+                    type="date"
+                    id="application_date"
+                    name="application_date"
+                    value="{{ application.application_date }}"
+                    required
+                >
+
+                <br><br>
+
+                <label for="status">Status:</label>
+
+                <select id="status" name="status" required>
+
+                    <option value="Applied"
+                        {% if application.status == "Applied" %}selected{% endif %}>
+                        Applied
+                    </option>
+
+                    <option value="Interview"
+                        {% if application.status == "Interview" %}selected{% endif %}>
+                        Interview
+                    </option>
+
+                    <option value="Rejected"
+                        {% if application.status == "Rejected" %}selected{% endif %}>
+                        Rejected
+                    </option>
+
+                    <option value="Offer"
+                        {% if application.status == "Offer" %}selected{% endif %}>
+                        Offer
+                    </option>
+
+                </select>
+
+                <br><br>
+
+                <label for="notes">Notes:</label>
+
+                <textarea
+                    id="notes"
+                    name="notes"
+                    rows="5"
+                >{{ application.notes or "" }}</textarea>
+
+                <br><br>
+
+                <button type="submit" class="add-button">
+                    Save Changes
+                </button>
+
+                <a href="{{ url_for('home') }}" class="cancel-button">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
